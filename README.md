@@ -1,6 +1,6 @@
 # Job Application Tracker
 
-A simple and intuitive Streamlit web application for tracking job applications. Built as a Python Basics course project, this tool helps job seekers organize their applications, monitor progress, and analyze their job search statistics.
+A simple and intuitive Streamlit web application for tracking job applications. This tool helps job seekers organize their applications, monitor progress, and analyze their job search statistics.
 
 ## Features
 
