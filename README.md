@@ -6,7 +6,9 @@ A simple and intuitive Streamlit web application for tracking job applications. 
 
 - **Quick Add Form**: Guided form-based entry for new job applications with validation
 - **Interactive Data Editor**: Spreadsheet-like interface for viewing and editing applications
-- **Auto-Save**: Changes are saved automatically with visual confirmation
+- **Pagination Support**: Navigate through large lists of applications with configurable items per page (5, 10, 20, 50, or 100)
+- **Page Navigation**: Use Previous/Next buttons or jump directly to any page
+- **Auto-Save**: Changes are saved with visual confirmation and timestamp
 - **Smart Dropdowns**: Pre-defined options for source, status, and offer fields prevent data entry errors
 - **Clickable Links**: Direct access to job postings from the application table
 - **Date Pickers**: Native date selection for all date fields
@@ -14,6 +16,7 @@ A simple and intuitive Streamlit web application for tracking job applications. 
 - **Dual Format Storage**: Automatically saves data to both CSV and JSON formats
 - **Auto Follow-up**: Automatically calculates follow-up dates 5 days after application
 - **Input Validation**: Ensures required fields are filled before submission
+- **Unsaved Changes Warning**: Visual indicator when you have unsaved edits
 
 ## Getting Started
 
@@ -26,14 +29,14 @@ A simple and intuitive Streamlit web application for tracking job applications. 
 
 1. Clone the repository:
 
-```
+```bash
 git clone https://github.com/yourusername/job-application-tracker.git
 cd job-application-tracker
 ```
 
 2. Install required dependencies:
 
-```
+```bash
 pip install -r requirements.txt
 ```
 
@@ -41,36 +44,42 @@ pip install -r requirements.txt
 
 Start the Streamlit app:
 
-```
-streamlit run tracker.py
+```bash
+streamlit run app.py
 ```
 
 The application will open in your default web browser at `http://localhost:8501`.
 
 ## Usage
 
+### Viewing and Managing Applications
+
+1. Navigate to the **"View / Edit"** tab to see all applications
+2. **Pagination Controls**:
+   - Use the "Items per page" dropdown at the top to select how many entries to display (5, 10, 20, 50, or 100)
+   - Navigate between pages using the Previous (◀) and Next (▶) buttons
+   - Jump to a specific page using the "Go to" number input
+   - View current page information (e.g., "Page 1 of 5 (21 total)")
+3. **Edit cells**: Click any cell to modify data directly
+4. **Add rows**: Click the "+" icon at the bottom of the table
+5. **Delete rows**: Select row checkboxes and press the Delete key
+6. **Use dropdowns**: Click dropdown cells to select from predefined options
+7. **Pick dates**: Click date cells to use the calendar picker
+8. **Click links**: Job posting links are clickable directly in the table
+9. Click **"💾 Save Changes"** to save your edits (button is disabled when there are no changes)
+10. View the last save timestamp in the top-right corner
+
 ### Adding Applications
 
-1. Navigate to the "Add Entry" tab
+1. Navigate to the **"Add Entry"** tab
 2. Fill in the required fields (Company, Position, Application Date)
 3. Select options from dropdowns for Source, Status, and Offer status
 4. Complete optional fields as needed (Link, Location, Interview Date, Notes)
-5. Click "Add Application" - the entry is automatically saved
-
-### Managing Applications
-
-1. Use the "Manage Applications" tab to see all applications in an editable table
-2. **Edit cells**: Click any cell to modify data directly
-3. **Add rows**: Click the "+" icon at the bottom of the table
-4. **Delete rows**: Select row checkboxes and press the Delete key
-5. **Use dropdowns**: Click dropdown cells to select from predefined options
-6. **Pick dates**: Click date cells to use the calendar picker
-7. **Click links**: Job posting links are clickable directly in the table
-8. Changes save automatically with timestamp confirmation
+5. Click **"Add Application"** - the entry is automatically saved
 
 ### Viewing Statistics
 
-1. Go to the "Statistics" tab
+1. Go to the **"Statistics"** tab
 2. Select a timeframe from the dropdown:
    - All Time
    - Last 7 Days
@@ -109,7 +118,8 @@ Both files are created automatically on first run and update in real-time as you
 
 ```
 job-application-tracker/
-├── tracker.py          # Main application file
+├── app.py              # Main application file with UI
+├── tracker.py          # Backend logic and data management
 ├── requirements.txt    # Python dependencies
 ├── README.md          # This file
 ├── .gitignore         # Git ignore rules
@@ -128,10 +138,33 @@ job-application-tracker/
 ## Tips for Best Results
 
 - Use the form in "Add Entry" for your first applications to get familiar with the fields
-- Use the data editor in "Manage Applications" for quick updates to existing entries
+- Use the data editor in "View / Edit" for quick updates to existing entries
+- Adjust "Items per page" to suit your screen size and number of applications
+- Use pagination to keep the interface clean and performant with many entries
 - Review the "Statistics" tab regularly to monitor your job search progress
 - Use the Notes field to track important details like recruiter names or salary ranges
 - Update Status regularly to keep your pipeline accurate
+- Always save your changes before navigating to a different page or tab
+
+## Key Features Explained
+
+### Pagination
+
+The pagination system helps manage large numbers of applications efficiently:
+
+- Choose your preferred page size from 5 to 100 items
+- Navigation controls remain at the bottom for easy access
+- Page state persists as you edit entries
+- Automatic page adjustment when deleting entries
+
+### Session State Management
+
+The application uses Streamlit's session state to:
+
+- Maintain your current page position
+- Cache edited data before saving
+- Track unsaved changes with visual warnings
+- Remember your pagination preferences
 
 ## Contributing
 
