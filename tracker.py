@@ -19,7 +19,7 @@ EMPTY_FORM = {
     'date_applied': date.today(),
     'source': SOURCES[0],
     'status': STATUS_OPTIONS[0],
-    'follow_up': date.today() + timedelta(days=5),
+    'follow_up': date.today() + timedelta(days=21), # Default follow-up in 3 weeks
     'interview_date': None,
     'offer_received': OFFER_OPTIONS[0],
     'notes': ''
