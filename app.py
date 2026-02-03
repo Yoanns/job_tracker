@@ -36,7 +36,7 @@ with tab1:
         with col_selector:
             items_per_page = st.selectbox(
                 "Items per page",
-                options=[5, 9, 15, 30, 50],
+                options=[5, 10, 20, 50, 100],
                 index=1,
                 key="items_per_page_selector",
             )
@@ -136,42 +136,44 @@ with tab1:
 
         # BOTTOM ROW: Navigation controls
         st.divider()
-        col_prev, col_goto, col_info, col_next = st.columns([1, 1, 2, 1])
+        col_prev, col_goto, col_info, col_next = st.columns([1, 1, 1, 1])
 
         with col_prev:
-            with col_prev:
-                if st.button("◀ Previous", disabled=st.session_state.current_page == 1, width="stretch"):
-                    st.session_state.current_page = max(1, st.session_state.current_page - 1)
-                    st.rerun()
-
-            with col_goto:
-                page_input = st.number_input(
-                    "Go to",
-                    min_value=1,
-                    max_value=total_pages,
-                    value=st.session_state.current_page,
-                    key="page_goto",
+            if st.button("◀ Previous", disabled=st.session_state.current_page == 1):
+                st.session_state.current_page = max(
+                    1, st.session_state.current_page - 1
                 )
-                if page_input != st.session_state.current_page:
-                    st.session_state.current_page = page_input
-                    st.rerun()
+                st.rerun()
 
-            with col_info:
-                # st.write(
-                #     f"Page {st.session_state.current_page} of {total_pages} ({total_items} total)"
-                # )
-                st.markdown(
-                    f"<div style='text-align: center; padding-top: 8px;'>Page {st.session_state.current_page} of {total_pages} ({total_items} total)</div>",
-                    unsafe_allow_html=True,
+        with col_goto:
+            page_input = st.number_input(
+                "Go to",
+                min_value=1,
+                max_value=total_pages,
+                value=st.session_state.current_page,
+                key="page_goto",
+                label_visibility="collapsed",
+            )
+            if page_input != st.session_state.current_page:
+                st.session_state.current_page = page_input
+                st.rerun()
+
+        with col_info:
+            st.write(
+                f"Page {st.session_state.current_page} of {total_pages} ({total_items} total)"
+            )
+            # st.markdown(
+            #     f"<div style='text-align: center; padding-top: 8px;'>Page {st.session_state.current_page} of {total_pages} ({total_items} total)</div>",
+            #     unsafe_allow_html=True,
+            # )
+        with col_next:
+            if st.button(
+                "Next ▶", disabled=st.session_state.current_page >= total_pages
+            ):
+                st.session_state.current_page = min(
+                    total_pages, st.session_state.current_page + 1
                 )
-            with col_next:
-                if st.button(
-                    "Next ▶", disabled=st.session_state.current_page >= total_pages
-                ):
-                    st.session_state.current_page = min(
-                        total_pages, st.session_state.current_page + 1
-                    )
-                    st.rerun()
+                st.rerun()
 
 
 with tab2:
