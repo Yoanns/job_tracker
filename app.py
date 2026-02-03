@@ -26,6 +26,37 @@ with tab1:
             st.session_state.editor_data = applications
         if "last_save_time" not in st.session_state:
             st.session_state.last_save_time = None
+        if "current_page" not in st.session_state:
+            st.session_state.current_page = 1
+        if "items_per_page" not in st.session_state:
+            st.session_state.items_per_page = 10
+
+        # Pagination controls
+        col_selector, col_spacer = st.columns([1, 4])
+        with col_selector:
+            items_per_page = st.selectbox(
+                "Items per page",
+                options=[5, 9, 15, 30, 50],
+                index=1,
+                key="items_per_page_selector",
+            )
+            st.session_state.items_per_page = items_per_page
+
+        # Calculate pagination
+        total_items = len(st.session_state.editor_data)
+        total_pages = (total_items + items_per_page - 1) // items_per_page
+        total_pages = max(1, total_pages)  # At least 1 page
+
+        # Ensure current page is valid
+        if st.session_state.current_page > total_pages:
+            st.session_state.current_page = total_pages
+
+        # Calculate slice indices
+        start_idx = (st.session_state.current_page - 1) * items_per_page
+        end_idx = min(start_idx + items_per_page, total_items)
+
+        # Get current page data
+        current_page_data = st.session_state.editor_data[start_idx:end_idx]
 
         # Info and timestamp
         col1, col2 = st.columns([3, 1])
@@ -41,12 +72,12 @@ with tab1:
         save_placeholder = st.empty()
         warn_placeholder = st.empty()
 
-        # Display editable table directly from list-of-dicts
-        edited = st.data_editor(
-            st.session_state.editor_data,
+        # Display editable table with paginated data
+        edited_page = st.data_editor(
+            current_page_data,
             num_rows="dynamic",
             width="stretch",
-            key="data_editor",
+            key=f"data_editor_page_{st.session_state.current_page}",
             column_config={
                 "company": st.column_config.TextColumn("Company", required=True),
                 "position": st.column_config.TextColumn("Position", required=True),
@@ -74,8 +105,12 @@ with tab1:
             },
         )
 
+        # Merge edited page data back into full dataset
+        updated_data = st.session_state.editor_data.copy()
+        updated_data[start_idx:end_idx] = edited_page
+
         # Detect changes
-        has_changes = edited != st.session_state.editor_data
+        has_changes = updated_data != st.session_state.editor_data
 
         # Warning if unsaved edits
         if has_changes:
@@ -85,8 +120,8 @@ with tab1:
 
         # Save button
         if st.button("💾 Save Changes", disabled=not has_changes, width="stretch"):
-            tr.save_data(edited)  # write list-of-dicts to CSV/JSON
-            st.session_state.editor_data = edited  # update cache
+            tr.save_data(updated_data)  # write list-of-dicts to CSV/JSON
+            st.session_state.editor_data = updated_data  # update cache
             st.session_state.last_save_time = datetime.now().strftime("%H:%M:%S")
             # st.success("✅ Changes saved!")
 
@@ -97,6 +132,46 @@ with tab1:
             save_placeholder.success("✅ Changes saved!")
             time.sleep(3)
             save_placeholder.empty()
+            st.rerun()
+
+        # BOTTOM ROW: Navigation controls
+        st.divider()
+        col_prev, col_goto, col_info, col_next = st.columns([1, 1, 2, 1])
+
+        with col_prev:
+            with col_prev:
+                if st.button("◀ Previous", disabled=st.session_state.current_page == 1, width="stretch"):
+                    st.session_state.current_page = max(1, st.session_state.current_page - 1)
+                    st.rerun()
+
+            with col_goto:
+                page_input = st.number_input(
+                    "Go to",
+                    min_value=1,
+                    max_value=total_pages,
+                    value=st.session_state.current_page,
+                    key="page_goto",
+                )
+                if page_input != st.session_state.current_page:
+                    st.session_state.current_page = page_input
+                    st.rerun()
+
+            with col_info:
+                # st.write(
+                #     f"Page {st.session_state.current_page} of {total_pages} ({total_items} total)"
+                # )
+                st.markdown(
+                    f"<div style='text-align: center; padding-top: 8px;'>Page {st.session_state.current_page} of {total_pages} ({total_items} total)</div>",
+                    unsafe_allow_html=True,
+                )
+            with col_next:
+                if st.button(
+                    "Next ▶", disabled=st.session_state.current_page >= total_pages
+                ):
+                    st.session_state.current_page = min(
+                        total_pages, st.session_state.current_page + 1
+                    )
+                    st.rerun()
 
 
 with tab2:
